@@ -1,0 +1,15 @@
+# Runs automatically on FIRST startup of MySQL (empty data dir only)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-init
+  namespace: production
+data:
+  init.sql: |
+    CREATE DATABASE IF NOT EXISTS company;
+    USE company;
+    CREATE TABLE IF NOT EXISTS employees (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(100)
+    );
+    INSERT INTO employees(name) VALUES ('Reyaz'),('Suman'),('Jack'),('Mike');

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Employee Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,Helvetica,sans-serif;min-height:100vh;background:linear-gradient(135deg,#0f172a,#1e293b,#312e81);display:flex;justify-content:center;align-items:center;overflow:hidden;position:relative;}
+.bg{position:absolute;width:100%;height:100%;overflow:hidden;z-index:1;}
+.circle{position:absolute;border-radius:50%;background:rgba(255,255,255,0.05);animation:float 10s linear infinite;}
+.circle:nth-child(1){width:180px;height:180px;top:10%;left:10%;}
+.circle:nth-child(2){width:120px;height:120px;bottom:15%;right:15%;animation-duration:14s;}
+.circle:nth-child(3){width:80px;height:80px;top:50%;left:70%;animation-duration:12s;}
+@keyframes float{0%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-30px) rotate(180deg);}100%{transform:translateY(0) rotate(360deg);}}
+.container{width:450px;padding:35px;border-radius:25px;background:rgba(255,255,255,0.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.15);box-shadow:0 10px 40px rgba(0,0,0,0.4);z-index:2;animation:slideUp 0.8s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+h1{color:white;text-align:center;margin-bottom:25px;font-size:34px;letter-spacing:1px;}
+p{color:rgba(255,255,255,0.7);text-align:center;margin-bottom:30px;font-size:15px;}
+button{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(45deg,#06b6d4,#3b82f6);color:white;font-size:18px;font-weight:bold;cursor:pointer;transition:0.3s;margin-bottom:25px;}
+button:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(59,130,246,0.5);}
+button:active{transform:scale(0.98);}
+ul{list-style:none;max-height:350px;overflow-y:auto;}
+ul::-webkit-scrollbar{width:6px;}
+ul::-webkit-scrollbar-thumb{background:#38bdf8;border-radius:10px;}
+li{background:rgba(255,255,255,0.08);margin-bottom:14px;padding:18px;border-radius:14px;color:white;font-size:17px;display:flex;align-items:center;gap:14px;transition:0.3s;border-left:5px solid #38bdf8;animation:fadeIn 0.5s ease;}
+li:hover{transform:translateX(6px);background:rgba(255,255,255,0.15);}
+li::before{content:"👨‍💼";font-size:22px;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(15px);}to{opacity:1;transform:translateY(0);}}
+.loading{text-align:center;color:white;margin-top:15px;font-size:16px;}
+.error{text-align:center;color:#f87171;margin-top:15px;}
+@media(max-width:500px){.container{width:92%;padding:25px;}h1{font-size:28px;}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="circle"></div><div class="circle"></div><div class="circle"></div></div>
+<div class="container">
+  <h1>🚀 Employee Dashboard</h1>
+  <p>View and manage employee records dynamically</p>
+  <button onclick="loadEmployees()">Load Employees</button>
+  <div id="status"></div>
+  <ul id="employees"></ul>
+</div>
+<script>
+async function loadEmployees() {
+  const status = document.getElementById('status');
+  const list = document.getElementById('employees');
+  status.innerHTML = '<div class="loading">⏳ Loading employees...</div>';
+  list.innerHTML = '';
+  try {
+    const response = await fetch('/api/employees');
+    if (!response.ok) throw new Error('Failed to fetch employees');
+    const data = await response.json();
+    status.innerHTML = '';
+    if (data.length === 0) {
+      status.innerHTML = '<div class="loading">No employees found</div>';
+      return;
+    }
+    data.forEach(emp => {
+      const li = document.createElement('li');
+      li.innerText = emp.name;
+      list.appendChild(li);
+    });
+  } catch (error) {
+    console.log(error);
+    status.innerHTML = '<div class="error">❌ Unable to load employees</div>';
+  }
+}
+</script>
+</body>
+</html>
